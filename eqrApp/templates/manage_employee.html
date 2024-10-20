@@ -1,0 +1,197 @@
+{% extends "base.html" %} {% load humanize %} {% load customfilter %} {% load qr_code %} {% load static %} {% block pageContent %} {% block headerContent %}
+<style>
+    img.img-thumbnail.avatar {
+        max-width: 200px;
+        max-height: 200px;
+    }
+</style>
+{% endblock headerContent %}
+<!--Section: Content-->
+<h3 class="fw-bolder">{{page_title}}</h3>
+<hr>
+<section class="py-3">
+    <div class="container">
+        <div class="card rounded-0 shadow-sm blur">
+            <div class="card-body">
+                <div class="container-fluid">
+                    <form action="" id="employee-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ employee.id }}">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="employee_code" class="control-label">Employee ID/Code</label>
+                                    <input type="text" class="form-control form-control-sm rounded-0" autofocus id="employee_code" value="{{employee.employee_code}}" name="employee_code" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="first_name" class="control-label">First Name</label>
+                                    <input type="text" class="form-control form-control-sm rounded-0" id="first_name" name="first_name" value="{{employee.first_name}}" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="middle_name" class="control-label">Middle Name</label>
+                                    <input type="text" class="form-control form-control-sm rounded-0" id="middle_name" name="middle_name" value="{{employee.middle_name}}" optional>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="last_name" class="control-label">Last Name</label>
+                                    <input type="text" class="form-control form-control-sm rounded-0" id="last_name" name="last_name" value="{{employee.last_name}}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="dob" class="control-label">Birthday</label>
+                                    <input type="date" class="form-control form-control-sm rounded-0" id="dob" name="dob" value="{{employee.dob|date:'Y-m-d'}}" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="gender" class="control-label">Gender</label>
+                                    <select class="form-select form-select-sm rounded-0" id="gender" name="gender" requried>
+                                        {% if employe.gender == 'Male' %}
+                                        <option selected>Male</option>
+                                        {% else %}
+                                        <option>Male</option>
+                                        {% endif %}
+                                        {% if employe.gender == 'Female' %}
+                                        <option selected>Female</option>
+                                        {% else %}
+                                        <option>Female</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="contact" class="control-label">Contact #</label>
+                                    <input type="text" class="form-control form-control-sm rounded-0" id="contact" name="contact" value="{{employee.contact}}" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="email" class="control-label">Email</label>
+                                    <input type="email" class="form-control form-control-sm rounded-0" id="email" name="email" value="{{employee.email}}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="address" class="control-label">Address</label>
+                                    <textarea rows="3" class="form-control form-control-sm rounded-0" id="address" name="address" required>{{employee.address}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="department" class="control-label">Department</label>
+                                    <input type="text" class="form-control form-control-sm rounded-0" id="department" name="department" value="{{employee.department}}" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="position" class="control-label">Position</label>
+                                    <input type="text" class="form-control form-control-sm rounded-0" id="position" name="position" value="{{employee.position}}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                                <div class="mb-3">
+                                    <label for="avatar" class="form-label">Avatar</label>
+                                    <input class="form-control" type="file" name="avatar" id="avatar" accept="image/*" onchange="display_image(this)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                                <div class="mb-3">
+                                    <img src="{% if employee.avatar %}{{employee.avatar.url}}{% else %}{% static 'assets/default/img/no-image-available.png' %}{% endif %}" alt="" class="img-thumbnail avatar" id="cimg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear-fix py-2"></div>
+                        <div class="text-end">
+                            <button class="btn btn-primary btn-sm rounded-0 bg-gradient"><i class="fa fa-save"></i> Save</button>
+                            <a href="{% url 'employee-page' %}" class="btn btn-default border btn-sm rounded-0 bg-gradient"><i class="fa fa-angle-left"></i> Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div> {% endblock pageContent %} {% block ScriptBlock %}
+<script>
+    function display_image(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#cimg').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            $('#cimg').attr('src', "{% if employee.avatar %}{{employee.avatar.url}}{% else %}{% static 'assets/default/img/no-image-available.png' %}{% endif %}");
+        }
+    }
+    $(function() {
+        $('#employee-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            start_loader();
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save-employee' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert("An error occured", 'error');
+                    end_loader();
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        location.href = "{% url 'employee-page' %}"
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("An error occured", 'error');
+                        end_loader();
+                        console.err(resp)
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                    end_loader()
+                }
+            })
+        })
+    })
+</script>
+{% endblock ScriptBlock %}

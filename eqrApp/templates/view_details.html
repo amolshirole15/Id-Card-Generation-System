@@ -1,0 +1,61 @@
+{% load qr_code %}
+<style>
+    #uni_modal .modal-footer {
+        display: none
+    }
+    
+    #uni_modal .modal-sub-footer {
+        display: flex
+    }
+    
+    #card-qr,
+    #card-avatar {
+        width: 9rem;
+        height: 9rem;
+    }
+</style>
+<div class="container-fluid" id="e-details">
+    <div class="d-flex w-100 justify-content-center my-4">
+        <img src="{% if employee.avatar %}{{employee.avatar.url}}{% endif %}" id="card-avatar" class="img-thumbnail" alt="">
+    </div>
+    <div class="lh-1">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <dl>
+                    <dt>Employee Code</dt>
+                    <dd>{{employee.employee_code}}</dd>
+                    <dt>Name</dt>
+                    <dd>{{employee.name}}</dd>
+                    <dt>Department</dt>
+                    <dd>{{employee.department}}</dd>
+                    <dt>Position</dt>
+                    <dd>{{employee.position}}</dd>
+                </dl>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <dl>
+                    <dt>Gender</dt>
+                    <dd>{{employee.gender}}</dd>
+                    <dt>Date of Birth</dt>
+                    <dd>{{employee.dob|date:'M d, Y'}}</dd>
+                    <dt>Contact #</dt>
+                    <dd>{{employee.contact}}</dd>
+                    <dt>Email</dt>
+                    <dd>{{employee.email}}</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <dl>
+                    <dt>Address</dt>
+                    <dd>{{employee.address}}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var emp_edit_url = "{% url 'edit-employee' employee.pk %}"
+    var emp_delete_url = "{% url 'delete-employee' employee.pk %}"
+</script>
