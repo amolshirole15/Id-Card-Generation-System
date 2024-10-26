@@ -11,6 +11,8 @@ urlpatterns = [
     path('qr_code/', include('qr_code.urls', namespace="qr_code")),
     path('',views.home),
     path('login',views.login_page,name='login-page'),
+    path('register/', views.register, name='register'),
+    path('register_user', views.register_user, name='register-user'),
     path('user_login',views.login_user,name='login-user'),
     path('home',views.home,name='home-page'),
     path('logout',views.logout_user,name='logout'),

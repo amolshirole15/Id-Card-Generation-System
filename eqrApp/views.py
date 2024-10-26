@@ -31,6 +31,34 @@ def login_page(request):
     context['page_title'] = 'Login'
     return render(request, 'login.html', context)
 
+def register(request):
+    context = context_data()
+    context['topbar'] = False
+    context['footer'] = False
+    context['page_name'] = 'register'
+    context['page_title'] = 'register'
+    return render(request, 'register.html', context)
+
+def register_user(request):
+    resp = {"status": "failed", "msg": ""}
+
+    if request.method == 'POST':
+        form = forms.UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            resp['status'] = 'success'
+            resp['msg'] = 'User registered successfully'
+        else:
+            resp['msg'] = 'There were errors in the registration form'
+            resp['errors'] = form.errors
+
+    else:
+        resp['msg'] = 'Invalid request method'
+
+    return HttpResponse(json.dumps(resp), content_type='application/json')
+
 def login_user(request):
     logout(request)
     resp = {"status":'failed','msg':''}
