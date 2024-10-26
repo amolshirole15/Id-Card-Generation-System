@@ -48,6 +48,18 @@ def register_user(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
+            # Create Profile for the new user
+            profile = models.Profile(
+                user=user,
+                organization_code=form.cleaned_data.get('organization_code'),
+                organization_name=form.cleaned_data.get('organization_name'),
+                organization_type=form.cleaned_data.get('organization_type'),
+                organization_address=form.cleaned_data.get('organization_address'),
+                contact_number=form.cleaned_data.get('contact_number'),
+                contact_email=form.cleaned_data.get('contact_email'),
+                website=form.cleaned_data.get('website'),
+            )
+            profile.save()  # Save the profile instance
             resp['status'] = 'success'
             resp['msg'] = 'User registered successfully'
         else:
@@ -84,7 +96,8 @@ def home(request):
     context = context_data()
     context['page'] = 'home'
     context['page_title'] = 'Home'
-    context['employees'] = models.Employee.objects.count()
+    employee_list = request.user.profile.employees.all()
+    context['employees'] = employee_list.count()
     return render(request, 'home.html', context)
 
 def logout_user(request):
@@ -97,7 +110,7 @@ def employee_list(request):
     context =context_data()
     context['page'] = 'employee_list'
     context['page_title'] = 'Employee List'
-    context['employees'] = models.Employee.objects.all()
+    context['employees'] = request.user.profile.employees.all()
 
     return render(request, 'employee_list.html', context)
 
