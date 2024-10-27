@@ -98,6 +98,7 @@ def home(request):
     context['page_title'] = 'Home'
     employee_list = request.user.profile.employees.all()
     context['employees'] = employee_list.count()
+    context['isCompany'] = request.user.profile.organization_type == 'company'
     return render(request, 'home.html', context)
 
 def logout_user(request):
@@ -108,51 +109,68 @@ def logout_user(request):
 @login_required
 def employee_list(request):
     context =context_data()
+    isCompany = request.user.profile.organization_type == 'company'
     context['page'] = 'employee_list'
-    context['page_title'] = 'Employee List'
+    context['page_title'] = 'Employee List' if isCompany else 'Student List'
     context['employees'] = request.user.profile.employees.all()
+    context['isCompany'] = isCompany
 
     return render(request, 'employee_list.html', context)
 
 @login_required 
 def manage_employee(request, pk=None):
     context =context_data()
+    isStudent = request.user.profile.organization_type == 'college'
+    context['isStudent'] = isStudent
     if pk is None:
         context['page'] = 'add_employee'
-        context['page_title'] = 'Add New Employee'
+        context['page_title'] = 'Add New Student' if isStudent else 'Add New Employee'
         context['employee'] = {}
     else:
         context['page'] = 'edit_employee'
-        context['page_title'] = 'Update Employee'
+        context['page_title'] = 'Update Student' if isStudent else 'Update Employee'
         context['employee'] = models.Employee.objects.get(id=pk)
 
     return render(request, 'manage_employee.html', context)
 
 @login_required
 def save_employee(request):
-    resp = { 'status' : 'failed', 'msg' : '' }
-    if not request.method == 'POST':
-        resp['msg'] = "No data has been sent into the request."
-
-    else:
-        if request.POST['id'] == '':
-            form = forms.SaveEmployee(request.POST, request.FILES)
+    resp = {'status': 'failed', 'msg': ''}
+    
+    if request.method == 'POST':
+        employee_id = request.POST.get('id', '')
+        if employee_id:
+            # Updating an existing employee
+            employee = models.Employee.objects.get(id=employee_id)
+            form = forms.SaveEmployee(request.POST, request.FILES, instance=employee)
         else:
-            employee = models.Employee.objects.get(id = request.POST['id'])
-            form = forms.SaveEmployee(request.POST, request.FILES, instance = employee)
+            # Creating a new employee
+            form = forms.SaveEmployee(request.POST, request.FILES)
+
         if form.is_valid():
-            form.save()
-            if request.POST['id'] == '':
-                messages.success(request, f"{request.POST['employee_code']} has been added successfully.")
+            employee = form.save(commit=False)
+            # Assign the logged-in user's profile to the employee
+            employee.profile = request.user
+            # Set default avatar if none is provided
+            if not employee.avatar:
+                employee.avatar = 'employee-avatars/avatar.jpg' if employee.gender == 'Male' else 'employee-avatars/avatar_2.png'
+            employee.save()
+
+            if not employee_id:
+                messages.success(request, f"{employee.employee_code} has been added successfully.")
             else:
-                messages.success(request, f"{request.POST['employee_code']} has been updated successfully.")
+                messages.success(request, f"{employee.employee_code} has been updated successfully.")
+                
             resp['status'] = 'success'
         else:
             for field in form:
                 for error in field.errors:
-                    if not resp['msg'] == '':
-                        resp['msg'] += str("<br />")
-                    resp['msg'] += str(f"[{field.label}] {error}")
+                    if resp['msg']:
+                        resp['msg'] += "<br />"
+                    resp['msg'] += f"[{field.label}] {error}"
+
+    else:
+        resp['msg'] = "No data has been sent into the request."
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
@@ -163,6 +181,8 @@ def view_card(request, pk =None):
     else:
         context = context_data()
         context['employee'] = models.Employee.objects.get(id=pk)
+        context['isCompany'] = request.user.profile.organization_type == 'company'
+        context['organization'] = request.user.profile
         return render(request, 'view_id.html', context)
 
 @login_required
@@ -178,6 +198,7 @@ def view_details(request, code = None):
     else:
         context = context_data()
         context['employee'] = models.Employee.objects.get(employee_code=code)
+        context['isCompany'] = request.user.profile.organization_type == 'company'
         return render(request, 'view_details.html', context)
 
 @login_required

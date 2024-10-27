@@ -8,8 +8,12 @@
         <div class="card rounded-0 shadow-sm blur">
             <div class="card-body">
                 <div class="container-fluid">
+                    <!-- Hidden elements to store the titles -->
+                    <input type="hidden" id="viewIdTitle" value="{% if isCompany %}View Employee ID{% else %}View Student ID{% endif %}">
+                    <input type="hidden" id="viewDetailsTitle" value="{% if isCompany %}View Employee Details{% else %}View Student Details{% endif %}">
+
                     <div class="text-end mb-2">
-                        <a href="{% url 'add-employee' %}" class="btn btn-primary btn-sm rounded-0 bg-gradient"><i class="fa fa-plus"></i> Add New Employee</a>
+                        <a href="{% url 'add-employee' %}" class="btn btn-primary btn-sm rounded-0 bg-gradient"><i class="fa fa-plus"></i> Add New {% if isCompany %}Employee{% else %}Student{% endif %}</a>
                     </div>
                     <table class="table table-stripped table-bordered">
                         <colgroup>
@@ -24,9 +28,9 @@
                             <tr class="bg-primary bg-gradient text-light">
                                 <th class="text-center">#</th>
                                 <th class="text-center">Date Added</th>
-                                <th class="text-center">Company ID</th>
+                                <th class="text-center">{% if isCompany %}Employee ID{% else %}Roll No{% endif %}</th>
                                 <th class="text-center">Name</th>
-                                <th class="text-center">Dept./Pos.</th>
+                                <th class="text-center">{% if isCompany %}Dept/Pos.{% else %}Std/Div{% endif %}</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -35,12 +39,11 @@
                             <tr>
                                 <td class="text-center">{{forloop.counter}}</td>
                                 <td class="">{{ employee.date_created|date:"M d, Y H:i" }}</td>
-                                <td class="">{{employee.employee_code}}</td>
+                                <td class="text-center">{{employee.employee_code}}</td>
                                 <td class="">{{employee}}</td>
                                 <td class="">
                                     <div class="lh-1">
-                                        <div>{{employee.department}}</div>
-                                        <div>{{employee.position}}</div>
+                                        <div>{{employee.department}} - {{employee.position}}</div>
                                     </div>
                                 </td>
                                 <td class="text-center">
@@ -72,11 +75,14 @@
 <script>
     $(function() {
         $('table').find('td, th').addClass('align-middle px-2 py-1')
+        // Get the modal titles from hidden inputs
+        var viewIdTitle = $('#viewIdTitle').val();
+        var viewDetailsTitle = $('#viewDetailsTitle').val();
         $('.view_card').click(function(){
-            uni_modal("View Employee ID", $(this).attr('data-url'),'modal-lg')
+            uni_modal(viewIdTitle, $(this).attr('data-url'),'modal-lg')
         })
         $('.view_detail').click(function(){
-            uni_modal("View Employee Details", $(this).attr('data-url'),'modal-md')
+            uni_modal(viewDetailsTitle, $(this).attr('data-url'),'modal-md')
         })
         $('#uni_modal').on('shown.bs.modal', function() {
             if ($('#id-card').length > 0) {

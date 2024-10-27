@@ -20,7 +20,7 @@
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
                                 <div class="form-group mb-3">
-                                    <label for="employee_code" class="control-label">Employee ID/Code</label>
+                                    <label for="employee_code" class="control-label">{% if isStudent %}Roll No{% else %}Employee ID{% endif %}</label>
                                     <input type="text" class="form-control form-control-sm rounded-0" autofocus id="employee_code" value="{{employee.employee_code}}" name="employee_code" required>
                                 </div>
                             </div>
@@ -48,7 +48,7 @@
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
                                 <div class="form-group mb-3">
-                                    <label for="dob" class="control-label">Birthday</label>
+                                    <label for="dob" class="control-label">Date of Birth</label>
                                     <input type="date" class="form-control form-control-sm rounded-0" id="dob" name="dob" value="{{employee.dob|date:'Y-m-d'}}" required>
                                 </div>
                             </div>
@@ -73,7 +73,7 @@
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
                                 <div class="form-group mb-3">
-                                    <label for="contact" class="control-label">Contact #</label>
+                                    <label for="contact" class="control-label">Contact No</label>
                                     <input type="text" class="form-control form-control-sm rounded-0" id="contact" name="contact" value="{{employee.contact}}" required>
                                 </div>
                             </div>
@@ -95,13 +95,13 @@
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
                                 <div class="form-group mb-3">
-                                    <label for="department" class="control-label">Department</label>
+                                    <label for="department" class="control-label">{% if isStudent %}Standard{% else %}Department{% endif %}</label>
                                     <input type="text" class="form-control form-control-sm rounded-0" id="department" name="department" value="{{employee.department}}" required>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12 col-md-12">
                                 <div class="form-group mb-3">
-                                    <label for="position" class="control-label">Position</label>
+                                    <label for="position" class="control-label">{% if isStudent %}Division{% else %}Position{% endif %}</label>
                                     <input type="text" class="form-control form-control-sm rounded-0" id="position" name="position" value="{{employee.position}}" required>
                                 </div>
                             </div>
@@ -109,7 +109,7 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
                                 <div class="mb-3">
-                                    <label for="avatar" class="form-label">Avatar</label>
+                                    <label for="avatar" class="form-label">Photo</label>
                                     <input class="form-control" type="file" name="avatar" id="avatar" accept="image/*" onchange="display_image(this)">
                                 </div>
                             </div>

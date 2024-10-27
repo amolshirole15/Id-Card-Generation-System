@@ -22,13 +22,13 @@
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <dl>
-                    <dt>Employee Code</dt>
+                    <dt>{% if isCompany %}Employee ID{% else %}Roll No{% endif %}</dt>
                     <dd>{{employee.employee_code}}</dd>
                     <dt>Name</dt>
                     <dd>{{employee.name}}</dd>
-                    <dt>Department</dt>
+                    <dt>{% if isCompany %}Department{% else %}Standard{% endif %}</dt>
                     <dd>{{employee.department}}</dd>
-                    <dt>Position</dt>
+                    <dt>{% if isCompany %}Position{% else %}Division{% endif %}</dt>
                     <dd>{{employee.position}}</dd>
                 </dl>
             </div>
@@ -38,7 +38,7 @@
                     <dd>{{employee.gender}}</dd>
                     <dt>Date of Birth</dt>
                     <dd>{{employee.dob|date:'M d, Y'}}</dd>
-                    <dt>Contact #</dt>
+                    <dt>Contact No</dt>
                     <dd>{{employee.contact}}</dd>
                     <dt>Email</dt>
                     <dd>{{employee.email}}</dd>

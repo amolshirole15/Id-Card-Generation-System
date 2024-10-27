@@ -25,14 +25,14 @@
     <div class="d-flex mb-3">
         <div class="px-2">
             <div class="id-card">
-                <div class="head-text text-center fw-bolder">{{system_name}}</div>
+                <div class="head-text text-center fw-bolder">{{ organization.organization_name }}</div>
                 <div class="d-flex w-100 justify-content-center my-4">
                     <img src="{% if employee.avatar %}{{employee.avatar.url}}{% endif %}" id="card-avatar" class="img-thumbnail" alt="">
                 </div>
                 <div class="lh-1">
                     <div class="text-center fw-bold">{{ employee.name }}</div>
-                    <div class="text-center fw-light text-sm">{{ employee.department }}</div>
-                    <div class="text-center fw-light text-sm">{{ employee.position }}</div>
+                    <div class="text-center fw-light text-sm">{{ employee.department }} {{ employee.position }}</div>
+                    <!-- <div class="text-center fw-light text-sm">{{ employee.position }}</div> -->
                 </div>
                 <div class="lh-1 text-center">
                     <img src="{% qr_url_from_text employee.employee_code size=5 version=1 image_format='png' %}" id="card-qr" alt="">
@@ -44,17 +44,17 @@
             <div class="id-card">
                 <div class="lh-1">
                     <dl>
-                        <dt>Employee Code</dt>
+                        <dt>{% if isCompany %}Employee ID{% else %}Roll No{% endif %}</dt>
                         <dd>{{employee.employee_code}}</dd>
-                        <dt>Department</dt>
+                        <dt>{% if isCompany %}Department{% else %}Standard{% endif %}</dt>
                         <dd>{{employee.department}}</dd>
-                        <dt>Position</dt>
+                        <dt>{% if isCompany %}Position{% else %}Division{% endif %}</dt>
                         <dd>{{employee.position}}</dd>
                         <dt>Gender</dt>
                         <dd>{{employee.gender}}</dd>
                         <dt>Date of Birth</dt>
                         <dd>{{employee.dob|date:'M d, Y'}}</dd>
-                        <dt>Contact #</dt>
+                        <dt>Contact No</dt>
                         <dd>{{employee.contact}}</dd>
                         <dt>Email</dt>
                         <dd>{{employee.email}}</dd>
