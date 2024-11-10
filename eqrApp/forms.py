@@ -22,10 +22,18 @@ class UserRegistrationForm(forms.ModelForm):
     organization_address = forms.CharField(widget=forms.Textarea, required=False)
     contact_email = forms.EmailField(required=False)
     website = forms.URLField(required=False)
+    # New field for template selection
+    template_id = forms.ChoiceField(
+        choices=[('id_template_1', 'Template 1'), ('id_template_2', 'Template 2')],
+        label="Select Template"
+    )
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'verify_password', 'organization_code', 'organization_name', 'organization_type']
+        fields = [
+            'username', 'password', 'verify_password', 'organization_code',
+            'organization_name', 'organization_type', 'template_id'
+        ]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -45,6 +53,7 @@ class UserRegistrationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
+
         if commit:
             user.save()
             models.Profile.objects.create(
@@ -55,7 +64,8 @@ class UserRegistrationForm(forms.ModelForm):
                 contact_number=self.cleaned_data['contact_number'],
                 organization_address=self.cleaned_data['organization_address'],
                 contact_email=self.cleaned_data['contact_email'],
-                website=self.cleaned_data['website']
+                website=self.cleaned_data['website'],
+                template_id=self.cleaned_data['template_id']
             )
         return user
 
@@ -78,13 +88,22 @@ class SaveEmployee(forms.ModelForm):
         model = models.Employee
         fields = ('employee_code', 'first_name', 'middle_name', 'last_name', 'dob', 'gender', 'contact',
                   'email', 'address', 'department', 'position', 'avatar',)
+    
+    def __init__(self, *args, **kwargs):
+        self.profile = kwargs.pop('profile', None)  # Get profile from kwargs
+        print("profile data:", self.profile)
+        super(SaveEmployee, self).__init__(*args, **kwargs)
 
     def clean_employee_code(self):
         employee_code = self.cleaned_data.get('employee_code')
         employee_id = self.instance.pk  # Check if it's an update
 
-        # Check uniqueness for the employee_code
-        existing_employee = models.Employee.objects.filter(employee_code=employee_code).exclude(pk=employee_id)
+        # Ensure `employee_code` is unique within the current profile
+        existing_employee = models.Employee.objects.filter(
+            profile=self.profile, 
+            employee_code=employee_code
+        ).exclude(pk=employee_id)  # Exclude current employee if updating
+
         if existing_employee.exists():
             raise ValidationError(f"{employee_code} already exists.")
         

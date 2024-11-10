@@ -27,6 +27,7 @@ class Profile(models.Model):
     contact_email = models.EmailField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
+    template_id = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return f"{self.organization_name} ({self.get_organization_type_display()})"

@@ -1,18 +1,37 @@
-{% extends 'base.html' %}{% load static %}
+{% extends 'base.html' %}
+{% load static %}
 
 {% block pageContent %}
 <style>
-    main {
-        height: 100%;
-        width: 100%;
+    /* Allow the entire page to scroll */
+    body, html {
+        overflow-y: auto;
+    }
+    .container-fluid, .d-flex {
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: auto;
+        padding: 2rem 0;
     }
     #logo-img {
         height: 11em;
         width: 26em;
+    }
+    #template-selection {
+        display: none;
+    }
+    .template-img {
+        width: auto;
+        height: 200px;
+        margin-right: 20px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    .template-option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
     }
 </style>
 
@@ -22,64 +41,86 @@
             <div class="card-header">
                 <h4 class="card-title"><b>Register</b></h4>
             </div>
-            <div class="card-body">
-                <div class="container-fluid">
-                    <form id="register-user" method="POST">
-                        {% csrf_token %}
-                        <div class="mdc-layout-grid">
-                            <div class="mdc-layout-grid__inner">
-                                <div class="form-group mb-3">
-                                    <label for="username" class="control-label">Username</label>
-                                    <input type="text" class="form-control rounded-0" name="username" id="username" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="password" class="control-label">Password</label>
-                                    <input type="password" class="form-control rounded-0" name="password" id="password" required data-toggle="popover" title="• At least 8 characters long.<br>• Must include upper and lower case letters.<br>• Must include at least one numeric digit.<br>• Must not be too common.">
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="verify_password" class="control-label">Confirm Password</label>
-                                    <input type="password" class="form-control rounded-0" name="verify_password" id="verify_password" required>
-                                    <small id="password-error" class="text-danger d-none">Passwords do not match.</small>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="organization_code" class="control-label">Organization Code</label>
-                                    <input type="text" class="form-control rounded-0" name="organization_code" id="organization_code" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="organization_name" class="control-label">Organization Name</label>
-                                    <input type="text" class="form-control rounded-0" name="organization_name" id="organization_name" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="organization_type" class="control-label">Organization Type</label>
-                                    <select name="organization_type" class="form-control rounded-0" id="organization_type" required>
-                                        <option value="">Select</option>
-                                        <option value="college">School/College</option>
-                                        <option value="company">Company</option>
-                                    </select>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="contact_number" class="control-label">Contact Number</label>
-                                    <input type="text" class="form-control rounded-0" name="contact_number" id="contact_number">
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="organization_address" class="control-label">Organization Address</label>
-                                    <textarea class="form-control rounded-0" name="organization_address" id="organization_address"></textarea>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="contact_email" class="control-label">Contact Email</label>
-                                    <input type="email" class="form-control rounded-0" name="contact_email" id="contact_email">
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="website" class="control-label">Website</label>
-                                    <input type="url" class="form-control rounded-0" name="website" id="website">
-                                </div>
-                                <div class="form-group mb-3">
-                                    <button type="submit" class="btn btn-sm rounded-0 btn-primary">Register</button>
-                                </div>
+            <div class="card-body px-4">
+                <!-- Registration Form -->
+                <form id="register-user" method="POST">
+                    {% csrf_token %}
+                    <div id="input-fields-section" class="mdc-layout-grid">
+                        <div class="mdc-layout-grid__inner">
+                            <!-- Registration Fields -->
+                            <div class="form-group mb-3">
+                                <label for="username" class="control-label">Username</label>
+                                <input type="text" class="form-control rounded-0" name="username" id="username" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="password" class="control-label">Password</label>
+                                <input type="password" class="form-control rounded-0" name="password" id="password" required data-toggle="popover" title="• At least 8 characters long.<br>• Must include upper and lower case letters.<br>• Must include at least one numeric digit.<br>• Must not be too common.">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="verify_password" class="control-label">Confirm Password</label>
+                                <input type="password" class="form-control rounded-0" name="verify_password" id="verify_password" required>
+                                <small id="password-error" class="text-danger d-none">Passwords do not match.</small>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="organization_code" class="control-label">Organization Code</label>
+                                <input type="text" class="form-control rounded-0" name="organization_code" id="organization_code" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="organization_name" class="control-label">Organization Name</label>
+                                <input type="text" class="form-control rounded-0" name="organization_name" id="organization_name" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="organization_type" class="control-label">Organization Type</label>
+                                <select name="organization_type" class="form-control rounded-0" id="organization_type" required>
+                                    <option value="">Select</option>
+                                    <option value="college">School/College</option>
+                                    <option value="company">Company</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="contact_number" class="control-label">Contact Number</label>
+                                <input type="text" class="form-control rounded-0" name="contact_number" id="contact_number">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="organization_address" class="control-label">Organization Address</label>
+                                <textarea class="form-control rounded-0" name="organization_address" id="organization_address"></textarea>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="contact_email" class="control-label">Contact Email</label>
+                                <input type="email" class="form-control rounded-0" name="contact_email" id="contact_email">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="website" class="control-label">Website</label>
+                                <input type="url" class="form-control rounded-0" name="website" id="website">
+                            </div>
+                            <div class="form-group mb-3">
+                                <button type="button" class="btn btn-sm rounded-0 btn-primary" id="next-step-btn">Next</button>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <!-- Template Selection Section (Initially Hidden) -->
+                    <div id="template-selection">
+                        <h5>Select a ID card Template</h5><br>
+                        <div class="form-group mb-3">
+                            <div class="template-option">
+                                <label>
+                                    <input type="radio" name="template_id" value="id_template_1">
+                                    <img src="{% static 'assets/templateImages/id_template_1.png' %}" class="template-img" alt="Template 1">
+                                </label>
+                            </div>
+                            <div class="template-option">
+                                <label>
+                                    <input type="radio" name="template_id" value="id_template_2">
+                                    <img src="{% static 'assets/templateImages/id_template_2.png' %}" class="template-img" alt="Template 2">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <button type="button" class="btn btn-sm rounded-0 btn-secondary" id="back-step-btn">Back</button>
+                            <button type="submit" class="btn btn-sm rounded-0 btn-primary">Submit Registration</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -93,8 +134,8 @@
         // Initialize popovers
         $('#password').popover({
             html: true,
-            trigger: 'focus', // Show on focus
-            placement: 'bottom' // Position of the popover
+            trigger: 'focus',
+            placement: 'bottom'
         });
 
         // Close the popover when clicking outside
@@ -104,7 +145,31 @@
             }
         });
 
+        // Show template selection when Next button is clicked
+        $('#next-step-btn').click(function () {
+            // Validate the registration fields first
+            var password = $('#password').val();
+            var verifyPassword = $('#verify_password').val();
+            if (password !== verifyPassword) {
+                $('#password-error').removeClass('d-none');
+                return false;
+            } else {
+                $('#password-error').addClass('d-none');
+            }
+
+            // Hide registration form and show template selection
+            $('#input-fields-section').hide();
+            $('#template-selection').show();
+        });
+
+        // Go back to the registration form when Back button is clicked
+        $('#back-step-btn').click(function () {
+            $('#template-selection').hide();
+            $('#input-fields-section').show();
+        });
+
         $('#register-user').submit(function (e) {
+            
             e.preventDefault();
             var _this = $(this);
             $('.err-msg').remove();

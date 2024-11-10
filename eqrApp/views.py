@@ -58,6 +58,7 @@ def register_user(request):
                 contact_number=form.cleaned_data.get('contact_number'),
                 contact_email=form.cleaned_data.get('contact_email'),
                 website=form.cleaned_data.get('website'),
+                template_id=form.cleaned_data.get("template_id")
             )
             profile.save()  # Save the profile instance
             resp['status'] = 'success'
@@ -142,10 +143,10 @@ def save_employee(request):
         if employee_id:
             # Updating an existing employee
             employee = models.Employee.objects.get(id=employee_id)
-            form = forms.SaveEmployee(request.POST, request.FILES, instance=employee)
+            form = forms.SaveEmployee(request.POST, request.FILES, instance=employee, profile=request.user)
         else:
             # Creating a new employee
-            form = forms.SaveEmployee(request.POST, request.FILES)
+            form = forms.SaveEmployee(request.POST, request.FILES, profile=request.user)
 
         if form.is_valid():
             employee = form.save(commit=False)
@@ -183,7 +184,8 @@ def view_card(request, pk =None):
         context['employee'] = models.Employee.objects.get(id=pk)
         context['isCompany'] = request.user.profile.organization_type == 'company'
         context['organization'] = request.user.profile
-        return render(request, 'view_id.html', context)
+        id_template = request.user.profile.template_id + '.html' if request.user.profile.template_id else 'id_template_1.html'
+        return render(request, id_template, context)
 
 @login_required
 def view_scanner(request):
@@ -197,7 +199,7 @@ def view_details(request, code = None):
         return HttpResponse("Employee code is Invalid")
     else:
         context = context_data()
-        context['employee'] = models.Employee.objects.get(employee_code=code)
+        context['employee'] = request.user.profile.employees.get(employee_code=code)
         context['isCompany'] = request.user.profile.organization_type == 'company'
         return render(request, 'view_details.html', context)
 
