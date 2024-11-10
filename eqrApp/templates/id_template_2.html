@@ -3,149 +3,170 @@
     #uni_modal .modal-footer {
         display: none;
     }
-
+    
     #uni_modal .modal-sub-footer {
+        display: flex
+    }
+    /* Card Wrapper */
+    .id-card-wrapper {
         display: flex;
+        gap: 1rem;
+        justify-content: center;
     }
 
-    /* Fixed ID Card Size */
-    .id-card-horizontal {
-        width: 3.5in;  /* Reverted to standard ID card width */
-        height: 2.5in;
-        border: 2px solid var(--bs-dark);
+    /* Front and Back Card Styling */
+    .id-card {
+        width: 2.5in;
+        height: 3.5in;
+        border: 2px solid #343a40;
         padding: 0.8rem;
-        display: flex;
-        align-items: flex-start;
-        border-radius: 8px;
+        border-radius: 12px;
         background-color: #f7f7f7;
-        margin: 0 auto;
-    }
-
-    /* Left and Right Columns */
-    .id-card-left, .id-card-right {
-        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     /* Organization Name */
     .org-name {
         font-weight: bold;
-        font-size: 0.9rem;
-        margin-bottom: 0.3rem;
+        font-size: 1rem;
         text-align: center;
+        color: #343a40;
+        margin-bottom: 0.5rem;
     }
 
     /* Avatar */
-    #card-avatar-horizontal {
-        width: 1in;
-        height: 1in;
+    .id-card-front .card-avatar {
+        width: 1.5in;
+        height: 1.5in;
         object-fit: cover;
         border-radius: 50%;
-        display: block;
-        margin: 0.3rem auto;
-        border: 1px solid #ddd;
+        border: 2px solid #ddd;
+        margin-bottom: 0.5rem;
     }
 
     /* Employee Info */
     .employee-info {
         text-align: center;
-        margin-top: 0.2rem;
+        margin-bottom: 1rem;
     }
 
     .employee-info strong {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
 
     .employee-info .position {
-        font-size: 0.75rem;
-        color: #555;
+        font-size: 0.8rem;
+        color: #666;
     }
 
-    /* Centered Contact & QR Code */
-    .id-card-right {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
+    /* Contact Info */
     .contact-info {
         font-size: 0.75rem;
-        width: 80%;
-    }
-
-    .contact-info dt {
-        font-weight: bold;
-        margin-bottom: 0.1rem;
-    }
-
-    .contact-info dd {
-        margin: 0;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        text-align: center;
+        width: 100%;
+        color: #444;
+        margin-top: 0.5rem;
     }
 
     /* QR Code */
-    #card-qr-horizontal {
-        width: 0.9in;
-        height: 0.9in;
-        display: block;
-        margin-top: 0.6rem;
+    .id-card-back .card-qr {
+        width: 1.2in;
+        height: 1.2in;
     }
 </style>
 
-<div class="container-fluid" id="id-card-horizontal">
-    <div class="id-card-horizontal">
-        <!-- Left Column -->
-        <div class="id-card-left">
-            <div class="org-name">{{ organization.organization_name }}</div>
-            <img src="{% if employee.avatar %}{{ employee.avatar.url }}{% endif %}" id="card-avatar-horizontal" alt="Avatar">
-            <div class="employee-info">
-                <strong>{{ employee.name }}</strong><br>
-                <div class="position">{{ employee.department }} - {{ employee.position }}</div>
-                <div class="id-number"><strong>ID No:</strong> {{ employee.employee_code }}</div>
-            </div>
-        </div>
-        <!-- Right Column -->
-        <div class="id-card-right">
-            <dl class="contact-info">
-                <dt>Contact:</dt>
-                <dd>{{ employee.contact }}</dd>
-                <dt>Email:</dt>
-                <dd>{{ employee.email }}</dd>
-            </dl>
-            <img src="{% qr_url_from_text employee.employee_code size=5 version=1 image_format='png' %}" id="card-qr-horizontal" alt="QR Code">
+<div class="container id-card-wrapper" id="id-card">
+    <!-- Front Side -->
+    <div class="id-card id-card-front text-center">
+        <div class="org-name">{{ organization.organization_name }}</div>
+        <img src="{% if employee.avatar %}{{ employee.avatar.url }}{% endif %}" class="card-avatar" alt="Employee Avatar">
+        <div class="employee-info">
+            <strong>{{ employee.name }}</strong><br>
+            <div class="position">{{ employee.department }} - {{ employee.position }}</div>
+            <div class="id-number"><strong>ID No:</strong> {{ employee.employee_code }}</div>
         </div>
     </div>
+
+    <!-- Back Side -->
+    <div class="id-card id-card-back text-center">
+        <div class="org-name">Information</div>
+        <dl class="contact-info">
+            <dt>Contact:</dt>
+            <dd>{{ employee.contact }}</dd>
+            <dt>Email:</dt>
+            <dd>{{ employee.email }}</dd>
+            <dt>Address:</dt>
+            <dd>{{ employee.address }}</dd>
+        </dl>
+        <img src="{% qr_url_from_text employee.employee_code size=5 version=1 image_format='png' %}" class="card-qr" alt="Employee QR Code">
+    </div>
 </div>
-
-<noscript id="qr-style-horizontal">
-<style>
-    /* Adjust for printing */
-    .id-card-horizontal {
-        width: 3.5in;
-        height: 2.5in;
-        padding: 0.5rem;
-    }
-
-    #card-avatar-horizontal {
-        width: 0.9in;
-        height: 0.9in;
-    }
-
-    #card-qr-horizontal {
-        width: 0.7in;
-        height: 0.7in;
-    }
-</style>
+<noscript id="qr-style">
+    <style>
+        * {
+            font-size: 12px;
+        }
+        .id-card-wrapper {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+    
+        .id-card {
+            width: 2.5in;
+            height: 3.5in;
+            border: 2px solid #343a40;
+            padding: 0.8rem;
+            border-radius: 12px;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+    
+        .org-name {
+            font-weight: bold;
+            font-size: 1rem;
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 0.5rem;
+        }
+    
+        .card-avatar {
+            width: 1.5in;
+            height: 1.5in;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            margin-bottom: 0.5rem;
+        }
+    
+        .employee-info {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+    
+        .position {
+            font-size: 0.8rem;
+            color: #666;
+        }
+    
+        .contact-info {
+            font-size: 0.75rem;
+            text-align: center;
+            width: 100%;
+            color: #444;
+            margin-top: 0.5rem;
+        }
+    
+        .card-qr {
+            width: 1.2in;
+            height: 1.2in;
+            margin-top: 1rem;
+        }
+    </style>
 </noscript>
-
-<script>
-    $(function() {
-        // Adjust modal width based on content size
-        $('#uni_modal').on('shown.bs.modal', function() {
-            $(this).find('.modal-dialog').addClass('modal-lg'); // Optional: Change 'modal-lg' based on screen size if needed
-        });
-    });
-</script>
