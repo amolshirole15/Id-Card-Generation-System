@@ -21,10 +21,11 @@ I developed this project using the following:
     Fontawesome
     Bootstrap v5
 
-_This Employee ID Card Generator with QR Code Project is accessible only to the company's management. The registered system users require to enter or log their system credentials in order to gain access to the features and functionalities of the system. The Admin Users are the only ones who have the privilege to register a new user for the site. The users can simply fill in the basic information and company information of employees and the system will automatically generate the employee's ID Card using the static format. Users can also print, edit, and delete the ID Card of the employee. On this system, users can also search or retrieve the employee's detail by only scanning the QR Code of the employee._
+_This Employee ID Card Generator with QR Code Project is accessible only to the company's management. The registered system users require to enter or log their system credentials in order to gain access to the features and functionalities of the system. The users can simply fill in the basic information and company information of employees and the system will automatically generate the employee's ID Card using the static format. Users can also print, edit, and delete the ID Card of the employee. On this system, users can also search or retrieve the employee's detail by only scanning the QR Code of the employee._
 
 # Features
-    Login and Logout
+    Login and Logout for organization
+    Id card template selection on regisrtation
     Home
     Displays the total count of employees
     Employee Management
