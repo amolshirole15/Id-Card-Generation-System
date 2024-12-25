@@ -41,34 +41,49 @@ def register(request):
 
 def register_user(request):
     resp = {"status": "failed", "msg": ""}
-
+    
     if request.method == 'POST':
-        form = forms.UserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            # Create Profile for the new user
-            profile = models.Profile(
-                user=user,
-                organization_code=form.cleaned_data.get('organization_code'),
-                organization_name=form.cleaned_data.get('organization_name'),
-                organization_type=form.cleaned_data.get('organization_type'),
-                organization_address=form.cleaned_data.get('organization_address'),
-                contact_number=form.cleaned_data.get('contact_number'),
-                contact_email=form.cleaned_data.get('contact_email'),
-                website=form.cleaned_data.get('website'),
-                template_id=form.cleaned_data.get("template_id")
-            )
-            profile.save()  # Save the profile instance
-            resp['status'] = 'success'
-            resp['msg'] = 'User registered successfully'
+        if request.user.is_authenticated:
+            # Updating an existing profile
+            user = request.user
+            print('auth user: ', user)
+            form = forms.UserRegistrationForm(request.POST, instance=user)
         else:
-            resp['msg'] = 'There were errors in the registration form'
-            resp['errors'] = form.errors
+            # Creating a new user and profile
+            form = forms.UserRegistrationForm(request.POST)
+        
+        if form.is_valid():
+            # Save the user and profile
+            user = form.save(commit=False)
+            if form.cleaned_data['password']:
+                user.set_password(form.cleaned_data['password'])
+            user.save()
+            
+            # Create or update the profile with profile data
+            profile_data = {
+                'organization_code': form.cleaned_data['organization_code'],
+                'organization_name': form.cleaned_data['organization_name'],
+                'organization_type': form.cleaned_data['organization_type'],
+                'contact_number': form.cleaned_data['contact_number'],
+                'organization_address': form.cleaned_data['organization_address'],
+                'contact_email': form.cleaned_data['contact_email'],
+                'website': form.cleaned_data['website'],
+                'template_id': form.cleaned_data['template_id'],
+            }
 
-    else:
-        resp['msg'] = 'Invalid request method'
+            if request.user.is_authenticated:
+                # Update existing profile
+                profile, _ = models.Profile.objects.update_or_create(user=user, defaults=profile_data)
+                resp['msg'] = 'Profile updated successfully.'
+            else:
+                # Create new profile for new user
+                models.Profile.objects.create(user=user, **profile_data)
+                resp['msg'] = 'Profile created successfully.'
+            
+            resp['status'] = 'success'
+        else:
+            # Collect all field errors
+            resp['msg'] = ' '.join([f"[{field.label}] {error}" for field in form for error in field.errors])
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
@@ -106,6 +121,51 @@ def logout_user(request):
     logout(request)
     return redirect('login-page')
 
+@login_required
+def update_profile_page(request):
+    # Load the existing user profile data into the form
+    user = request.user
+    profile = request.user.profile
+    form = forms.UserRegistrationForm(instance=user)
+    context = {
+        'form': form,
+        'profile': profile,
+        'topbar': False,
+        'footer': False,
+        'page_name': 'profile-page',
+        'page_title': 'Update Profile'
+    }
+    return render(request, 'update_profile.html', context)
+
+# def update_profile(request):
+#     resp = {"status": "failed", "msg": ""}
+#     user = request.user
+#     profile = request.user.profile
+    
+#     form = forms.UserRegistrationForm(request.POST, instance=user)
+#     if form.is_valid():
+#         user = form.save(commit=False)
+#         user.set_password(form.cleaned_data['password'])
+#         user.save()
+        
+#         # Update profile fields from form data
+#         profile.organization_code = form.cleaned_data.get('organization_code')
+#         profile.organization_name = form.cleaned_data.get('organization_name')
+#         profile.organization_type = form.cleaned_data.get('organization_type')
+#         profile.organization_address = form.cleaned_data.get('organization_address')
+#         profile.contact_number = form.cleaned_data.get('contact_number')
+#         profile.contact_email = form.cleaned_data.get('contact_email')
+#         profile.website = form.cleaned_data.get('website')
+#         profile.template_id = form.cleaned_data.get("template_id")
+#         profile.save()
+        
+#         resp['status'] = 'success'
+#         resp['msg'] = 'Profile updated successfully'
+#     else:
+#         resp['msg'] = 'There were errors in the profile form'
+#         resp['errors'] = form.errors
+
+#     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 @login_required
 def employee_list(request):

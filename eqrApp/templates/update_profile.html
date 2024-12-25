@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block pageContent %}
+<style>
+    .template-img {
+        width: auto;
+        height: 200px;
+        margin-right: 20px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    .template-option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+</style>
+<h3 class="fw-bolder">{{ page_title }}</h3>
+<hr>
+<div class="container">
+    <div class="card rounded-0 shadow-sm blur">
+        <div class="card-body">
+            <form id="profile-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- Organization Fields -->
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <label for="organization_code" class="control-label">Organization Code</label>
+                        <input type="text" class="form-control rounded-0" id="organization_code" name="organization_code" value="{{ profile.organization_code }}" required>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <label for="organization_name" class="control-label">Organization Name</label>
+                        <input type="text" class="form-control rounded-0" id="organization_name" name="organization_name" value="{{ profile.organization_name }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <label for="organization_type" class="control-label">Organization Type</label>
+                        <select name="organization_type" class="form-control rounded-0" id="organization_type" required>
+                            <option value="">Select</option>
+                            <option value="college" {% if profile.organization_type == 'college' %}selected{% endif %}>School/College</option>
+                            <option value="company" {% if profile.organization_type == 'company' %}selected{% endif %}>Company</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <label for="contact_number" class="control-label">Contact Number</label>
+                        <input type="text" class="form-control rounded-0" id="contact_number" name="contact_number" value="{{ profile.contact_number }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <label for="organization_address" class="control-label">Organization Address</label>
+                        <textarea class="form-control rounded-0" id="organization_address" name="organization_address">{{ profile.organization_address }}</textarea>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <label for="contact_email" class="control-label">Contact Email</label>
+                        <input type="email" class="form-control rounded-0" id="contact_email" name="contact_email" value="{{ profile.contact_email }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <label for="website" class="control-label">Website</label>
+                        <input type="url" class="form-control rounded-0" id="website" name="website" value="{{ profile.website }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="template_id" class="control-label fw-bolder mb-2">Select ID Card Template</label>
+                        <div class="template-option">
+                            <label>
+                                <input type="radio" name="template_id" value="id_template_1" {% if profile.template_id == 'id_template_1' %}checked{% endif %}>
+                                <img src="{% static 'assets/templateImages/id_template_1.png' %}" class="template-img" alt="Template 1">
+                            </label>
+                            <label>
+                                <input type="radio" name="template_id" value="id_template_2" {% if profile.template_id == 'id_template_2' %}checked{% endif %}>
+                                <img src="{% static 'assets/templateImages/id_template_2.png' %}" class="template-img" alt="Template 2">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary rounded-0">Save</button>
+                    <a href="{% url 'home-page' %}" class="btn btn-secondary rounded-0">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $('#profile-form').submit(function (e) {
+        e.preventDefault();
+        var _this = $(this);
+        $('.err-msg').remove();
+        var el = $('<div>');
+        el.addClass("alert alert-danger err-msg");
+        el.hide();
+        start_loader();
+
+        $.ajax({
+            headers: {
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            url: "{% url 'register-user' %}",
+            data: new FormData(_this[0]),
+            cache: false,
+            contentType: false,
+            processData: false,
+            method: 'POST',
+            type: 'POST',
+            dataType: 'json',
+            error: err => {
+                console.log("Error details:", err);
+                alert("An error occurred while calling API", 'error');
+                end_loader();
+            },
+            success: function(resp) {
+                console.log('registration response', resp);
+                    
+                if (resp.status === 'success') {
+                    el.removeClass("alert alert-danger err-msg");
+                    location.href = "{% url 'home-page' %}";
+                } else if (resp.status === 'failed' && resp.msg) {
+                    el.text(resp.msg);
+                } else {
+                    el.text("An error occurred", 'error');
+                    console.error(resp);
+                }
+                _this.prepend(el);
+                el.show('slow');
+                $("html, body, .modal").scrollTop(0);
+                end_loader();
+            }
+        });
+    })
+</script>
+{% endblock %}

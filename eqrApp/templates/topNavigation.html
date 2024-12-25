@@ -42,7 +42,7 @@
                 <ul class="navbar-nav d-flex flex-row">
                     {% if user.id %}
                     <li class="nav-item">
-                        <span class="nav-link"><b>Howdy, {{user.username}}</b></span>
+                        <a class="nav-link" aria-current="page" href="{% url 'profile-update-page' %}"><b>Howdy, {{user.username}}</b></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="{% url 'logout' %}">Logout</a>
